@@ -21,18 +21,11 @@ app.add_middleware(
 
 @app.get("/api/users/{telegram_id}")
 def get_user_telegram_id(telegram_id: str):
-    try:
-        # Convert telegram_id to int since database column is bigint
-        telegram_id_int = int(telegram_id)
-    except ValueError:
-        raise HTTPException(status_code=400, detail="Invalid telegram_id format")
+    response = supabase_client.table("users").select("*").eq("telegram_id", telegram_id).execute()
 
-    response = supabase_client.table("users").select("level, heal_points, distance").eq("telegram_id",
-                                                                                        telegram_id_int).execute()
     if not response.data:
         raise HTTPException(status_code=404, detail="User not found")
 
-    # Ensure we return the data with proper null handling
     return response.data[0]
 
 @app.get("/api/data")
