@@ -37,7 +37,6 @@ This will:
 - ✓ Install UV package manager if needed
 - ✓ Create virtual environment
 - ✓ Install all dependencies
-- ✓ Create `.env.example` template
 - ✓ Create `.env` file for your configuration
 
 ### 3. Configure Environment Variables
@@ -47,11 +46,8 @@ Edit the `.env` file and add your configuration:
 ```bash
 # Required: Get your token from @BotFather on Telegram
 TELEGRAM_BOT_TOKEN=your_actual_bot_token_here
-
-# Optional: Adjust server settings
-HOST=0.0.0.0
-PORT=8000
-DEBUG=true
+SUPABASE_URL=https://your_supabase_url_here
+SUPABASE_ANON_KEY=your_supabase_anon_key_here
 ```
 
 ### 4. Start Development Server
