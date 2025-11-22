@@ -1,0 +1,153 @@
+version: '3'
+
+vars:
+  PYTHON: python3
+  VENV_DIR: .venv
+  ENV_FILE: .env
+  ENV_EXAMPLE: .env.example
+
+tasks:
+  default:
+    desc: Show available tasks
+    cmds:
+      - task --list-all
+    silent: true
+
+  setup:
+    desc: Complete project setup for local development
+    cmds:
+      - task: check-python
+      - task: check-uv
+      - task: create-venv
+      - task: install
+      - task: env-setup
+      - echo "✓ Setup complete! Run 'task dev' to start the development server"
+    silent: false
+
+  check-python:
+    desc: Verify Python version is 3.12 or higher
+    cmds:
+      - |
+        {{.PYTHON}} -c "import sys; exit(0 if sys.version_info >= (3, 12) else 1)" || \
+        (echo "Error: Python 3.12 or higher is required" && exit 1)
+      - echo "✓ Python version OK"
+    silent: true
+
+  check-uv:
+    desc: Check if UV package manager is installed
+    cmds:
+      - |
+        if ! command -v uv &> /dev/null; then
+          echo "UV package manager not found. Installing..."
+          curl -LsSf https://astral.sh/uv/install.sh | sh || \
+          (echo "Error: Failed to install UV. Please install manually: https://github.com/astral-sh/uv" && exit 1)
+        fi
+      - echo "✓ UV package manager available"
+    silent: true
+
+  create-venv:
+    desc: Create virtual environment if it doesn't exist
+    cmds:
+      - |
+        if [ ! -d "{{.VENV_DIR}}" ]; then
+          echo "Creating virtual environment..."
+          uv venv {{.VENV_DIR}}
+          echo "✓ Virtual environment created"
+        else
+          echo "✓ Virtual environment already exists"
+        fi
+    silent: true
+
+  install:
+    desc: Install project dependencies
+    cmds:
+      - echo "Installing dependencies..."
+      - uv sync
+      - echo "✓ Dependencies installed"
+    silent: true
+
+  env-setup:
+    desc: Setup .env file from template
+    cmds:
+      - |
+        if [ ! -f "{{.ENV_FILE}}" ]; then
+          echo "Creating .env file from template..."
+          cp {{.ENV_EXAMPLE}} {{.ENV_FILE}}
+          echo "⚠ IMPORTANT: Edit .env file and add your configuration values"
+          echo "  Required: TELEGRAM_BOT_TOKEN"
+        else
+          echo "✓ .env file already exists"
+        fi
+    silent: true
+
+  dev:
+    desc: Run FastAPI development server with hot reload
+    deps: [check-venv]
+    cmds:
+      - |
+        if [ ! -f "{{.ENV_FILE}}" ]; then
+          echo "Error: .env file not found. Run 'task setup' first."
+          exit 1
+        fi
+      - echo "Starting development server..."
+      - uv run uvicorn main:app --reload --host 0.0.0.0 --port 8000
+    silent: true
+
+  check-venv:
+    desc: Verify virtual environment exists
+    internal: true
+    cmds:
+      - |
+        if [ ! -d "{{.VENV_DIR}}" ]; then
+          echo "Error: Virtual environment not found. Run 'task setup' first."
+          exit 1
+        fi
+    silent: true
+
+  clean:
+    desc: Remove virtual environment and cache files
+    prompt: This will delete the virtual environment and cache files. Continue?
+    cmds:
+      - rm -rf {{.VENV_DIR}}
+      - rm -rf .pytest_cache
+      - rm -rf __pycache__
+      - rm -rf **/__pycache__
+      - rm -rf .ruff_cache
+      - rm -rf *.egg-info
+      - echo "✓ Cleaned up virtual environment and cache files"
+
+  update:
+    desc: Update dependencies to latest versions
+    deps: [check-venv]
+    cmds:
+      - echo "Updating dependencies..."
+      - uv lock --upgrade
+      - uv sync
+      - echo "✓ Dependencies updated"
+
+  lint:
+    desc: Run code linting (if linter is configured)
+    deps: [check-venv]
+    cmds:
+      - echo "Linting not yet configured. Add ruff or similar to pyproject.toml"
+
+  test:
+    desc: Run tests (if tests are configured)
+    deps: [check-venv]
+    cmds:
+      - echo "Tests not yet configured. Add pytest to pyproject.toml"
+
+  shell:
+    desc: Activate virtual environment shell
+    cmds:
+      - echo "Activating virtual environment..."
+      - |
+        if [ -f "{{.VENV_DIR}}/bin/activate" ]; then
+          echo "Run: source {{.VENV_DIR}}/bin/activate"
+        elif [ -f "{{.VENV_DIR}}/Scripts/activate" ]; then
+          echo "Run: {{.VENV_DIR}}\\Scripts\\activate"
+        else
+          echo "Error: Virtual environment not found"
+          exit 1
+        fi
+    silent: true
