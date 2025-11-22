@@ -19,3 +19,5 @@ jobs:
 
       - name: Run Ruff
         uses: astral-sh/ruff-action@v3.5.1
+        with:
+          args: 'check --fix'
