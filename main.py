@@ -9,7 +9,7 @@ app = FastAPI(
 )
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://questwalk.vercel.app"],
+    allow_origins=["https://create-react-app-git-addpages-kanshandirs-projects.vercel.app/"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
