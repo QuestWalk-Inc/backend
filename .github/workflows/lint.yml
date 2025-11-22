@@ -20,5 +20,5 @@ jobs:
       - name: Run Ruff
         uses: astral-sh/ruff-action@v3.5.1
         with:
-          args: "config --output-format=text --verbose"
+          args: "check --output-format=github --verbose "
           github-token: ${{ secrets.GITHUB_TOKEN }}
