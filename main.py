@@ -1,13 +1,32 @@
 from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
+from fastapi import HTTPException
+from starlette.middleware.cors import CORSMiddleware
 
+from supabase_connection import supabase_client
 
 app = FastAPI(
     title="Vercel + FastAPI",
     description="Vercel + FastAPI",
     version="1.0.0",
 )
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["https://create-react-app-git-addpages-kanshandirs-projects.vercel.app/"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
+
+@app.get("/api/users/{telegram_id}")
+def get_user_telegram_id(telegram_id: str):
+    response = supabase_client.table("users").select("*").eq("telegram_id", telegram_id).execute()
+
+    if not response.data:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    return response.data[0]
 
 @app.get("/api/data")
 def get_sample_data():
