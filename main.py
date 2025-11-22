@@ -1,13 +1,19 @@
 from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
-
+from starlette.middleware.cors import CORSMiddleware
 
 app = FastAPI(
     title="Vercel + FastAPI",
     description="Vercel + FastAPI",
     version="1.0.0",
 )
-
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["https://questwalk.vercel.app"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.get("/api/data")
 def get_sample_data():
