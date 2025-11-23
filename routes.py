@@ -13,7 +13,7 @@ async def telegram_webhook(request: Request):
     print(f"Received update: {data}")
     update = types.Update(**data)
     await dp.feed_update(bot, update)
-    print(f"Update processed")
+    print("Update processed")
     return {"ok": True}
 
 @main_routers.get("/api/users/{telegram_id}")
