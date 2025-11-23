@@ -129,7 +129,7 @@ tasks:
     desc: Run code linting (if linter is configured)
     deps: [check-venv]
     cmds:
-      - echo "Linting not yet configured. Add ruff or similar to pyproject.toml"
+      - ruff check --fix
 
   test:
     desc: Run tests (if tests are configured)
