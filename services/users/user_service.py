@@ -10,8 +10,6 @@ class UserService(Protocol):
     def get_user(self, telegram_id: int) -> list:
         ...
 
-
-
 class SupabaseUserService(UserService):
     def __init__(self, supabase_client: Client):
         self.supabase_client = supabase_client

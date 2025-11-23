@@ -16,14 +16,6 @@ async def lifespan(app: FastAPI):
     await bot.set_webhook(webhook)
     print(f"Webhook set → {webhook}")
 
-    app.add_middleware(
-        CORSMiddleware,
-        allow_origins=["https://create-react-app-rust-seven-80.vercel.app"],
-        allow_credentials=True,
-        allow_methods=["*"],
-        allow_headers=["*"],
-    )
-
     yield
 
     await bot.delete_webhook()
@@ -35,6 +27,14 @@ app = FastAPI(
     description="Vercel + FastAPI",
     version="1.0.0",
     lifespan=lifespan,
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["https://create-react-app-rust-seven-80.vercel.app"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 app.include_router(main_routers)

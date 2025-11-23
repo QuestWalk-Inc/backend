@@ -1,7 +1,8 @@
 from fastapi import HTTPException, APIRouter, Request
 from aiogram import types
 
-from bot.main import dp, bot
+from bot.handlers import dp
+from bot.main import bot
 from services import users
 
 main_routers = APIRouter()
@@ -9,8 +10,10 @@ main_routers = APIRouter()
 @main_routers.post("/webhook")
 async def telegram_webhook(request: Request):
     data = await request.json()
+    print(f"Received update: {data}")
     update = types.Update(**data)
     await dp.feed_update(bot, update)
+    print(f"Update processed")
     return {"ok": True}
 
 @main_routers.get("/api/users/{telegram_id}")
