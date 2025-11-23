@@ -1,0 +1,22 @@
+starlette
+# Web Framework
+fastapi==0.115.6
+uvicorn[standard]==0.34.0
+
+# Telegram Bot Framework
+aiogram==3.22.0
+
+# Configuration Management
+pydantic==2.11.10
+pydantic-settings==2.7.1
+python-dotenv==1.2.1
+
+# HTTP Client
+httpx==0.28.1
+aiohttp==3.11.11
+
+# Database (Optional - if using Supabase)
+supabase==2.24.0
+
+# Deployment
+mangum==0.19.0

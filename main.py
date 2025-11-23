@@ -1,15 +1,26 @@
+import os
 from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
 from fastapi import HTTPException
 from starlette.middleware.cors import CORSMiddleware
-
+from telegram_bot.webhook import router as telegram_router
+from telegram_bot.loader import bot
 from supabase_connection import supabase_client
+# Lifespan
+from contextlib import asynccontextmanager
+from dotenv import load_dotenv
+load_dotenv()
+
+WEBHOOK_URL = f"https://{os.getenv('WEBHOOK_URL')}/webhook"
 
 app = FastAPI(
     title="Vercel + FastAPI",
     description="Vercel + FastAPI",
     version="1.0.0",
 )
+
+app.include_router(telegram_router)
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["https://create-react-app-rust-seven-80.vercel.app"],
@@ -18,6 +29,16 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup: установка вебхука
+    await bot.set_webhook(WEBHOOK_URL)
+    print(f"Webhook set → {WEBHOOK_URL}")
+    yield
+    # Shutdown: удаляем вебхук и закрываем сессию
+    await bot.delete_webhook()
+    await bot.session.close()
+    print("Webhook deleted and bot session closed.")
 
 @app.get("/api/users/{telegram_id}")
 def get_user_telegram_id(telegram_id: str):
