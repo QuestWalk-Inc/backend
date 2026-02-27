@@ -28,8 +28,8 @@ def create_training(training: dict):
     return response.data[0]
 
 
-@main_routers.patch("/api/trainings/{training_id}")
-def update_training(training_id: int, training: dict):
+@main_routers.patch("/api/trainings/{user_id}")
+def update_training(user_id: int, training: dict):
     if not training:
         raise HTTPException(status_code=400, detail="No fields provided for update")
 
@@ -37,7 +37,7 @@ def update_training(training_id: int, training: dict):
         supabase_client
         .table("trainings")
         .update(training)
-        .eq("id", training_id)
+        .eq("user_id", user_id)
         .execute()
     )
 
@@ -47,13 +47,13 @@ def update_training(training_id: int, training: dict):
     return response.data[0]
 
 
-@main_routers.delete("/api/trainings/{training_id}")
-def delete_training(training_id: int):
+@main_routers.delete("/api/trainings/{user_id}")
+def delete_training(user_id: int):
     response = (
         supabase_client
         .table("trainings")
         .delete()
-        .eq("id", training_id)
+        .eq("user_id", user_id)
         .execute()
     )
 
