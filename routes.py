@@ -70,3 +70,15 @@ def get_user_telegram_id(telegram_id: str):
         raise HTTPException(status_code=404, detail="User not found")
 
     return response[0]
+
+@main_routers.get("/api/trainings/{user_id}")
+def get_user_training(user_id: str):
+    response = supabase_client.table("trainings") \
+        .select("*") \
+        .eq("user_id", user_id) \
+        .execute()
+
+    if not response.data:
+        raise HTTPException(status_code=404, detail="No trainings found")
+
+    return response.data
