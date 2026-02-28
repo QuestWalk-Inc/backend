@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Request
 from aiogram import types
 from datetime import datetime, timedelta
-from fastapi import HTTPException
+from fastapi import HTTPException, Body
 from bot.handlers import dp
 from bot.main import bot
 from services import users, supabase_client
@@ -110,3 +110,31 @@ def delete_training_for_date_and_time(
         raise HTTPException(status_code=404, detail="Training not found")
 
     return {"deleted": len(response.data)}
+
+
+@main_routers.patch("/api/trainings/{user_id}/{date_key}/{workout_time}")
+def update_training_for_date_and_time(
+    user_id: int,
+    date_key: str,
+    workout_time: str,  # same format you store in DB
+    payload: dict = Body(...),  # fields to update, e.g. {"repeat": 10}
+):
+    # date_key is "YYYY-MM-DD"
+    start = datetime.fromisoformat(date_key)
+    end = start + timedelta(days=1)
+
+    response = (
+        supabase_client
+        .table("trainings")
+        .update(payload)
+        .eq("user_id", user_id)
+        .eq("workout_time", workout_time)
+        .gte("date", start.isoformat())
+        .lt("date", end.isoformat())
+        .execute()
+    )
+
+    if not response.data:
+        raise HTTPException(status_code=404, detail="Training not found")
+
+    return {"updated": len(response.data), "rows": response.data}
