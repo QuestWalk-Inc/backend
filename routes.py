@@ -1,6 +1,4 @@
-from datetime import datetime, timedelta
-
-from fastapi import HTTPException, APIRouter, Request
+from fastapi import APIRouter, Request
 from aiogram import types
 
 from bot.handlers import dp
