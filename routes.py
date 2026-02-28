@@ -85,8 +85,15 @@ def get_user_training(user_id: str):
 
     return response.data
 
-@main_routers.delete("/api/trainings/{user_id}/{date_key}")
-def delete_training_for_date(user_id: int, date_key: str):
+from datetime import datetime, timedelta
+from fastapi import HTTPException
+
+@main_routers.delete("/api/trainings/{user_id}/{date_key}/{workout_time}")
+def delete_training_for_date_and_time(
+    user_id: int,
+    date_key: str,
+    workout_time: str,  # e.g. "08:30" or "08:30:00"
+):
     # date_key is "YYYY-MM-DD"
     start = datetime.fromisoformat(date_key)
     end = start + timedelta(days=1)
@@ -96,6 +103,7 @@ def delete_training_for_date(user_id: int, date_key: str):
         .table("trainings")
         .delete()
         .eq("user_id", user_id)
+        .eq("workout_time", workout_time)
         .gte("date", start.isoformat())
         .lt("date", end.isoformat())
         .execute()
