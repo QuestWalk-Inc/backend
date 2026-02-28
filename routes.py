@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Request
 from aiogram import types
-
+from datetime import datetime, timedelta
+from fastapi import HTTPException
 from bot.handlers import dp
 from bot.main import bot
 from services import users, supabase_client
@@ -83,8 +84,6 @@ def get_user_training(user_id: str):
 
     return response.data
 
-from datetime import datetime, timedelta
-from fastapi import HTTPException
 
 @main_routers.delete("/api/trainings/{user_id}/{date_key}/{workout_time}")
 def delete_training_for_date_and_time(
